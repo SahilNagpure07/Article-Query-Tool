@@ -45,16 +45,16 @@ if process_url_clicked:
     time.sleep(2)
 
     embedding_model = HuggingFaceEmbeddings(model_name="BAAI/bge-small-en")
-    docs_embeddings = embedding_model.embed_documents([doc.page_content for doc in docs])
+    # docs_embeddings = embedding_model.embed_documents([doc.page_content for doc in docs])
 
-    embeddings_np = np.array(docs_embeddings, dtype=np.float32)
+    # embeddings_np = np.array(docs_embeddings, dtype=np.float32)
 
-    dimension = embeddings_np.shape[1]  
-    index = faiss.IndexFlatL2(dimension)
-    index.add(embeddings_np)
+    # dimension = embeddings_np.shape[1]  
+    # index = faiss.IndexFlatL2(dimension)
+    # index.add(embeddings_np)
 
     vectorstore = FAISS.from_documents(docs, embedding_model)
-    retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
+    # retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
     
     with open(file_path, "wb") as f:
         pickle.dump(vectorstore, f)
@@ -64,6 +64,7 @@ if query:
     if os.path.exists(file_path):
         with open(file_path, "rb") as f:
             vectorstore = pickle.load(f)
+            retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
             chain = RetrievalQAWithSourcesChain.from_llm(llm=llm, retriever=retriever)
             result = chain({"question": query}, return_only_outputs=True)
             
